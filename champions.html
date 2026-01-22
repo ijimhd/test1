@@ -90,22 +90,32 @@
               img.style.cursor = "zoom-in";
 
               img.addEventListener("click", () => {
-                // 1️⃣ Show the already-loaded image instantly
+              const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+              // Mobile: reuse already loaded image (FAST)
+              if (isMobile) {
                 lightboxImg.src = img.src;
-                lightboxImg.classList.add("loading");
                 lightbox.classList.remove("hidden");
                 document.body.style.overflow = "hidden";
+                return;
+              }
 
-                // 2️⃣ Preload full-res image
-                const highRes = new Image();
-                highRes.src = netlifyImage(src, 3000);
+              // Desktop: show medium image instantly
+              lightboxImg.src = img.src;
+              lightboxImg.classList.add("loading");
+              lightbox.classList.remove("hidden");
+              document.body.style.overflow = "hidden";
 
-                highRes.onload = () => {
-                  // 3️⃣ Swap to high-res smoothly
-                  lightboxImg.src = highRes.src;
-                  lightboxImg.classList.remove("loading");
-                };
-              });
+              // Load optimized desktop lightbox size (NOT huge)
+              const highRes = new Image();
+              highRes.src = netlifyImage(src, 1600);
+
+              highRes.onload = () => {
+                lightboxImg.src = highRes.src;
+                lightboxImg.classList.remove("loading");
+              };
+            });
+
 
               fragment.appendChild(img);
             });
