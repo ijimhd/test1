@@ -181,6 +181,8 @@ a:hover{
   object-fit: contain;
   border-radius: 8px;
   transition: opacity 0.4s ease, filter 0.4s ease;
+  touch-action: pan-y; /* allow vertical scroll but capture horizontal swipe */
+  user-select: none;
 }
 
 /* Mobile lightbox sizing */
