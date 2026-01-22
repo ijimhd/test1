@@ -42,162 +42,172 @@
 
         <script src="gallery-champions.js"></script>
         <script>
-        document.addEventListener("DOMContentLoaded", () => {
-          const gallery = document.getElementById("gallery");
-          const lightbox = document.getElementById("lightbox");
-          const lightboxImg = document.getElementById("lightbox-img");
-          const closeBtn = document.querySelector(".lightbox-close");
+        // ===== gallery.js =====
 
-          prevBtn.addEventListener("click", showPrev);
-          nextBtn.addEventListener("click", showNext);
+// DOM elements
+const gallery = document.getElementById("gallery");
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightbox-img");
+const closeBtn = document.querySelector(".lightbox-close");
+const prevBtn = document.querySelector(".lightbox-nav.prev");
+const nextBtn = document.querySelector(".lightbox-nav.next");
 
-          // Keyboard support
-          document.addEventListener("keydown", e => {
-            if (lightbox.classList.contains("hidden")) return;
-            if (e.key === "ArrowRight") showNext();
-            if (e.key === "ArrowLeft") showPrev();
-          });
+let shuffled = [];
+let currentIndex = 0;
 
-          let touchStartX = 0;
-          let touchEndX = 0;
+// ----- HELPER FUNCTIONS -----
 
-          lightbox.addEventListener("touchstart", e => {
-            touchStartX = e.changedTouches[0].screenX;
-          });
+// Shuffle array
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 
-          lightbox.addEventListener("touchend", e => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-          });
+// Netlify image helper
+function netlifyImage(src, width) {
+  return `/.netlify/images?url=${encodeURIComponent(src)}&w=${width}`;
+}
 
-          function handleSwipe() {
-            const diff = touchEndX - touchStartX;
+// ----- LIGHTBOX FUNCTIONS -----
+function openLightbox(index) {
+  currentIndex = index;
+  const src = shuffled[currentIndex];
+  const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
-            // Minimum distance to qualify as a swipe
-            if (Math.abs(diff) < 40) return;
+  lightbox.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+  lightboxImg.classList.add("loading");
 
-            if (diff > 0) {
-              // Swipe right → previous
-              showPrev();
-            } else {
-              // Swipe left → next
-              showNext();
-            }
-          }
+  if (isMobile) {
+    // Mobile: use medium image
+    lightboxImg.src = netlifyImage(src, 800);
+    lightboxImg.classList.remove("loading");
+    return;
+  }
 
+  // Desktop: medium first
+  lightboxImg.src = netlifyImage(src, 800);
 
+  // Load high-res
+  const highRes = new Image();
+  highRes.src = netlifyImage(src, 1600);
+  highRes.onload = () => {
+    lightboxImg.src = highRes.src;
+    lightboxImg.classList.remove("loading");
+  };
+}
 
-          function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-              const j = Math.floor(Math.random() * (i + 1));
-              [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-          }
+function closeLightbox() {
+  lightbox.classList.add("hidden");
+  lightboxImg.src = "";
+  document.body.style.overflow = "";
+}
 
-          function netlifyImage(src, width) {
-            return `/.netlify/images?url=${encodeURIComponent(src)}&w=${width}`;
-          }
+function showNext() {
+  currentIndex = (currentIndex + 1) % shuffled.length;
+  openLightbox(currentIndex);
+}
 
-          const widths = [400, 600, 800, 1000, 1200, 1600, 2000];
+function showPrev() {
+  currentIndex = (currentIndex - 1 + shuffled.length) % shuffled.length;
+  openLightbox(currentIndex);
+}
 
-          const shuffled = shuffleArray([...images]);
+// ----- EVENT LISTENERS -----
 
-          const preloadImages = shuffled.map(src => {
-            return new Promise(resolve => {
-              const img = new Image();
-              img.src = netlifyImage(src, 800);
-              img.onload = () => resolve(src);
-              img.onerror = () => resolve(null);
-            });
-          });
+// Close button
+closeBtn.addEventListener("click", closeLightbox);
 
-          Promise.all(preloadImages).then(readyImages => {
-            const fragment = document.createDocumentFragment();
+// Click outside image closes
+lightbox.addEventListener("click", e => {
+  if (e.target === lightbox) closeLightbox();
+});
 
-            readyImages.forEach(src => {
-              if (!src) return;
+// Arrow buttons
+nextBtn.addEventListener("click", showNext);
+prevBtn.addEventListener("click", showPrev);
 
-              const img = document.createElement("img");
+// Keyboard navigation
+document.addEventListener("keydown", e => {
+  if (lightbox.classList.contains("hidden")) return;
+  if (e.key === "ArrowRight") showNext();
+  if (e.key === "ArrowLeft") showPrev();
+  if (e.key === "Escape") closeLightbox();
+});
 
-              img.src = netlifyImage(src, 800);
-              img.srcset = widths.map(w => `${netlifyImage(src, w)} ${w}w`).join(", ");
-              img.sizes = `
-                (max-width: 640px) 95vw,
-                (max-width: 1024px) 45vw,
-                (max-width: 1600px) 30vw,
-                25vw
-              `;
+// ----- MOBILE SWIPE -----
+let touchStartX = 0;
+let touchEndX = 0;
 
-              img.loading = "lazy";
-              img.className = "w-full h-auto rounded-lg shadow-md object-cover fade-in-start";
-              img.style.cursor = "zoom-in";
+lightbox.addEventListener("touchstart", e => {
+  touchStartX = e.changedTouches[0].screenX;
+});
 
-              img.addEventListener("click", () => {
-              const isMobile = window.matchMedia("(max-width: 768px)").matches;
+lightbox.addEventListener("touchend", e => {
+  touchEndX = e.changedTouches[0].screenX;
+  handleSwipe();
+});
 
-              // Open overlay FIRST
-              lightbox.classList.remove("hidden");
-              document.body.style.overflow = "hidden";
+function handleSwipe() {
+  const diff = touchEndX - touchStartX;
+  if (Math.abs(diff) < 40) return;
+  if (diff > 0) showPrev();
+  else showNext();
+}
 
-              // Reset state
-              lightboxImg.classList.add("loading");
+// ----- GALLERY INITIALIZATION -----
+document.addEventListener("DOMContentLoaded", () => {
+  if (!images || !images.length) return;
 
-              // MOBILE: reuse existing image completely
-              if (isMobile) {
-                lightboxImg.src = img.src;
-                lightboxImg.classList.remove("loading");
-                return;
-              }
+  shuffled = shuffleArray([...images]);
 
-              // DESKTOP: show same visual size immediately
-              lightboxImg.src = img.src;
+  const preloadImages = shuffled.map(src => {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.src = netlifyImage(src, 800);
+      img.onload = () => resolve(src);
+      img.onerror = () => resolve(null);
+    });
+  });
 
-              // Load higher-res version IN PLACE
-              const highRes = new Image();
-              highRes.src = netlifyImage(src, 1600);
+  Promise.all(preloadImages).then(readyImages => {
+    const fragment = document.createDocumentFragment();
 
-              highRes.onload = () => {
-                /* 
-                  🔥 This swaps pixel data WITHOUT changing layout
-                */
-                lightboxImg.src = highRes.src;
-                lightboxImg.classList.remove("loading");
-              };
-            });
+    readyImages.forEach((src, index) => {
+      if (!src) return;
 
+      const img = document.createElement("img");
+      img.src = netlifyImage(src, 800);
+      img.srcset = [400, 600, 800, 1000, 1200, 1600, 2000]
+        .map(w => `${netlifyImage(src, w)} ${w}w`)
+        .join(", ");
+      img.sizes = `
+        (max-width: 640px) 95vw,
+        (max-width: 1024px) 45vw,
+        (max-width: 1600px) 30vw,
+        25vw
+      `;
+      img.loading = "lazy";
+      img.className = "fade-in-start w-full h-auto rounded-lg shadow-md object-cover";
+      img.style.cursor = "zoom-in";
 
+      img.addEventListener("click", () => openLightbox(index));
+      fragment.appendChild(img);
+    });
 
+    gallery.appendChild(fragment);
 
-              fragment.appendChild(img);
-            });
+    requestAnimationFrame(() => {
+      document.querySelectorAll(".fade-in-start").forEach(img => {
+        img.classList.add("loaded");
+      });
+    });
+  });
+});
 
-            gallery.appendChild(fragment);
-
-            requestAnimationFrame(() => {
-              document.querySelectorAll(".fade-in-start").forEach(img => {
-                img.classList.add("loaded");
-              });
-            });
-          });
-
-          // ❌ CLOSE LIGHTBOX
-          function closeLightbox() {
-            lightbox.classList.add("hidden");
-            lightboxImg.src = "";
-            document.body.style.overflow = "";
-          }
-
-          closeBtn.addEventListener("click", closeLightbox);
-
-          lightbox.addEventListener("click", e => {
-            if (e.target === lightbox) closeLightbox();
-          });
-
-          document.addEventListener("keydown", e => {
-            if (e.key === "Escape") closeLightbox();
-          });
-        });
         </script>
 
     </body>
