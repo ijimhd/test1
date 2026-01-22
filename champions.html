@@ -34,7 +34,8 @@
         <script>
         document.addEventListener("DOMContentLoaded", () => {
           const gallery = document.getElementById("gallery");
-
+        
+          // Fisher-Yates shuffle
           function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
               const j = Math.floor(Math.random() * (i + 1));
@@ -42,15 +43,19 @@
             }
             return array;
           }
-
+        
+          // Wrap source URL for Netlify Image CDN
           function netlifyImage(src, width) {
             return `/.netlify/images?url=${encodeURIComponent(src)}&w=${width}`;
           }
-
-          // 1️⃣ Shuffle BEFORE loading
+        
+          // Responsive widths for srcset
+          const widths = [400, 600, 800, 1000, 1200, 1600, 2000];
+        
+          // Shuffle images first
           const shuffled = shuffleArray([...images]);
-
-          // 2️⃣ Preload medium-sized images only (fast + safe)
+        
+          // Preload images at medium size (800px) to avoid flicker
           const preloadImages = shuffled.map(src => {
             return new Promise(resolve => {
               const img = new Image();
@@ -59,33 +64,39 @@
               img.onerror = () => resolve(null);
             });
           });
-
+        
           Promise.all(preloadImages).then(readyImages => {
             const fragment = document.createDocumentFragment();
-
+        
             readyImages.forEach(src => {
               if (!src) return;
-
+        
               const img = document.createElement("img");
-
+        
+              // Set main src to medium size (800px)
               img.src = netlifyImage(src, 800);
-              img.srcset = `
-                ${netlifyImage(src, 400)} 400w,
-                ${netlifyImage(src, 800)} 800w,
-                ${netlifyImage(src, 1600)} 1600w
+        
+              // Generate srcset for all breakpoints
+              img.srcset = widths.map(w => `${netlifyImage(src, w)} ${w}w`).join(", ");
+        
+              // sizes tells the browser approx. width for responsive selection
+              img.sizes = `
+                (max-width: 640px) 95vw,
+                (max-width: 1024px) 45vw,
+                (max-width: 1600px) 30vw,
+                25vw
               `;
-              img.sizes = "(max-width: 640px) 95vw, (max-width: 1024px) 45vw, 25vw";
-
+        
               img.loading = "lazy";
               img.className = "w-full h-auto rounded-lg shadow-md object-cover fade-in-start";
-
+        
               fragment.appendChild(img);
             });
-
-            // 3️⃣ Append everything at once
+        
+            // Append all at once
             gallery.appendChild(fragment);
-
-            // 4️⃣ Trigger fade-in
+        
+            // Trigger fade-in animation
             requestAnimationFrame(() => {
               document.querySelectorAll(".fade-in-start").forEach(img => {
                 img.classList.add("loaded");
@@ -94,6 +105,7 @@
           });
         });
         </script>
+
 
 
 
