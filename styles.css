@@ -159,6 +159,8 @@ a:hover{
   font-size: 40px;
 }
 
+
+/* Lightbox overlay */
 .lightbox {
   position: fixed;
   inset: 0;
@@ -173,19 +175,30 @@ a:hover{
   display: none;
 }
 
+/* Lightbox image */
 .lightbox img {
-  max-width: 95vw;
-  max-height: 90vh;
+  max-width: 70vw;
+  max-height: 85vh;
   object-fit: contain;
   border-radius: 8px;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.4s ease, filter 0.4s ease;
 }
 
+/* Mobile lightbox sizing */
+@media (max-width: 768px) {
+  .lightbox img {
+    max-width: 95vw;
+    max-height: 90vh;
+  }
+}
+
+/* Loading state for progressive image swap */
 .lightbox img.loading {
   opacity: 0.5;
   filter: blur(6px);
 }
 
+/* Close button */
 .lightbox-close {
   position: absolute;
   top: 20px;
@@ -201,6 +214,7 @@ a:hover{
 .lightbox-close:hover {
   opacity: 0.8;
 }
+
 
 
 @media screen and (max-width: 900px){
