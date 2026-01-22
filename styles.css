@@ -217,9 +217,6 @@ a:hover{
     max-width: 95vw;
     max-height: 90vh;
   }
-  .lightbox-nav {
-    display: none;
-  }
 }
 
 /* Loading state for progressive image swap */
