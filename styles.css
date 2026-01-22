@@ -178,6 +178,12 @@ a:hover{
   max-height: 90vh;
   object-fit: contain;
   border-radius: 8px;
+  transition: opacity 0.4s ease;
+}
+
+.lightbox img.loading {
+  opacity: 0.5;
+  filter: blur(6px);
 }
 
 .lightbox-close {
