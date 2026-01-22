@@ -195,7 +195,7 @@ a:hover{
   margin-top: 12px; /* space between image and arrows */
   display: flex;
   justify-content: space-between;
-  width: 60%; /* adjust width as needed */
+  width: 30%; /* adjust width as needed */
 }
 
 .lightbox-nav {
