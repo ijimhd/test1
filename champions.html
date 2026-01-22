@@ -34,8 +34,10 @@
         <script>
         document.addEventListener("DOMContentLoaded", () => {
           const gallery = document.getElementById("gallery");
+          const lightbox = document.getElementById("lightbox");
+          const lightboxImg = document.getElementById("lightbox-img");
+          const closeBtn = document.querySelector(".lightbox-close");
         
-          // Fisher-Yates shuffle
           function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
               const j = Math.floor(Math.random() * (i + 1));
@@ -44,18 +46,14 @@
             return array;
           }
         
-          // Wrap source URL for Netlify Image CDN
           function netlifyImage(src, width) {
             return `/.netlify/images?url=${encodeURIComponent(src)}&w=${width}`;
           }
         
-          // Responsive widths for srcset
           const widths = [400, 600, 800, 1000, 1200, 1600, 2000];
         
-          // Shuffle images first
           const shuffled = shuffleArray([...images]);
         
-          // Preload images at medium size (800px) to avoid flicker
           const preloadImages = shuffled.map(src => {
             return new Promise(resolve => {
               const img = new Image();
@@ -73,13 +71,8 @@
         
               const img = document.createElement("img");
         
-              // Set main src to medium size (800px)
               img.src = netlifyImage(src, 800);
-        
-              // Generate srcset for all breakpoints
               img.srcset = widths.map(w => `${netlifyImage(src, w)} ${w}w`).join(", ");
-        
-              // sizes tells the browser approx. width for responsive selection
               img.sizes = `
                 (max-width: 640px) 95vw,
                 (max-width: 1024px) 45vw,
@@ -89,22 +82,46 @@
         
               img.loading = "lazy";
               img.className = "w-full h-auto rounded-lg shadow-md object-cover fade-in-start";
+              img.style.cursor = "zoom-in";
+        
+              // 🖱️ CLICK → OPEN LIGHTBOX
+              img.addEventListener("click", () => {
+                lightboxImg.src = netlifyImage(src, 3000);
+                lightbox.classList.remove("hidden");
+                document.body.style.overflow = "hidden";
+              });
         
               fragment.appendChild(img);
             });
         
-            // Append all at once
             gallery.appendChild(fragment);
         
-            // Trigger fade-in animation
             requestAnimationFrame(() => {
               document.querySelectorAll(".fade-in-start").forEach(img => {
                 img.classList.add("loaded");
               });
             });
           });
+        
+          // ❌ CLOSE LIGHTBOX
+          function closeLightbox() {
+            lightbox.classList.add("hidden");
+            lightboxImg.src = "";
+            document.body.style.overflow = "";
+          }
+        
+          closeBtn.addEventListener("click", closeLightbox);
+        
+          lightbox.addEventListener("click", e => {
+            if (e.target === lightbox) closeLightbox();
+          });
+        
+          document.addEventListener("keydown", e => {
+            if (e.key === "Escape") closeLightbox();
+          });
         });
         </script>
+
 
 
 
