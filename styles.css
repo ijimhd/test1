@@ -159,7 +159,6 @@ a:hover{
   font-size: 40px;
 }
 
-
 /* Lightbox overlay */
 .lightbox {
   position: fixed;
@@ -214,8 +213,6 @@ a:hover{
 .lightbox-close:hover {
   opacity: 0.8;
 }
-
-
 
 @media screen and (max-width: 900px){
 
@@ -284,6 +281,10 @@ a:hover{
   }
   .image {
     width: 70vw;
+  }
+
+  .background{
+  background-image: url(./jpg/home-mobile.webp);
   }
 
   .overlay{
