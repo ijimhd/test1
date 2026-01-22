@@ -153,10 +153,31 @@ lightbox.addEventListener("touchend", e => {
 
 function handleSwipe() {
   const diff = touchEndX - touchStartX;
+
+  // Minimum distance to qualify as a swipe
   if (Math.abs(diff) < 40) return;
-  if (diff > 0) showPrev();
-  else showNext();
+
+  const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+  if (diff > 0) {
+    // Swipe right → previous
+    if (isMobile) {
+      // MOBILE: do not wrap around
+      if (currentIndex > 0) showPrev();
+    } else {
+      showPrev(); // desktop can wrap
+    }
+  } else {
+    // Swipe left → next
+    if (isMobile) {
+      // MOBILE: do not wrap around
+      if (currentIndex < shuffled.length - 1) showNext();
+    } else {
+      showNext(); // desktop can wrap
+    }
+  }
 }
+
 
 // ----- GALLERY INITIALIZATION -----
 document.addEventListener("DOMContentLoaded", () => {
