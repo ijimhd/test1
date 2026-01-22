@@ -177,15 +177,11 @@ a:hover{
 
 /* Lightbox image */
 .lightbox img {
-  width: auto;
-  height: auto;
   max-width: 70vw;
   max-height: 85vh;
   object-fit: contain;
   border-radius: 8px;
-
-  /* 🔒 THIS PREVENTS RESIZE JUMPS */
-  display: block;
+  transition: opacity 0.4s ease, filter 0.4s ease;
 }
 
 /* Mobile lightbox sizing */
@@ -218,39 +214,6 @@ a:hover{
 .lightbox-close:hover {
   opacity: 0.8;
 }
-
-.lightbox-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 48px;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  padding: 12px;
-  user-select: none;
-}
-
-.lightbox-nav.prev {
-  left: 24px;
-}
-
-.lightbox-nav.next {
-  right: 24px;
-}
-
-.lightbox-nav:hover {
-  opacity: 0.7;
-}
-
-/* Hide arrows on mobile (optional, recommended) */
-@media (max-width: 768px) {
-  .lightbox-nav {
-    display: none;
-  }
-}
-
 
 
 
