@@ -177,11 +177,15 @@ a:hover{
 
 /* Lightbox image */
 .lightbox img {
+  width: auto;
+  height: auto;
   max-width: 70vw;
   max-height: 85vh;
   object-fit: contain;
   border-radius: 8px;
-  transition: opacity 0.4s ease, filter 0.4s ease;
+
+  /* 🔒 THIS PREVENTS RESIZE JUMPS */
+  display: block;
 }
 
 /* Mobile lightbox sizing */
