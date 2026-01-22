@@ -92,33 +92,36 @@
               img.addEventListener("click", () => {
               const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
-              // 🔒 Lock background immediately
+              // Open overlay FIRST
               lightbox.classList.remove("hidden");
               document.body.style.overflow = "hidden";
 
-              // Always clear previous image
-              lightboxImg.src = "";
-              lightboxImg.classList.remove("loading");
+              // Reset state
+              lightboxImg.classList.add("loading");
 
-              // MOBILE: reuse existing image
+              // MOBILE: reuse existing image completely
               if (isMobile) {
                 lightboxImg.src = img.src;
+                lightboxImg.classList.remove("loading");
                 return;
               }
 
-              // DESKTOP: show medium image instantly
+              // DESKTOP: show same visual size immediately
               lightboxImg.src = img.src;
-              lightboxImg.classList.add("loading");
 
-              // Load optimized desktop size
+              // Load higher-res version IN PLACE
               const highRes = new Image();
               highRes.src = netlifyImage(src, 1600);
 
               highRes.onload = () => {
+                /* 
+                  🔥 This swaps pixel data WITHOUT changing layout
+                */
                 lightboxImg.src = highRes.src;
                 lightboxImg.classList.remove("loading");
               };
             });
+
 
 
 
