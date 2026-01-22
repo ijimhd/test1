@@ -83,15 +83,11 @@ function openLightbox(index) {
   const src = shuffled[currentIndex];
   const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
-  lightbox.classList.remove("hidden");
-  document.body.style.overflow = "hidden";
-  lightboxImg.classList.add("loading");
+  lightboxImg.classList.remove("loaded", "slide-left", "slide-right");
 
-    lightboxImg.classList.remove("loaded", "slide-left", "slide-right");
-    
-    // Determine direction of navigation
-    if (index > currentIndex) {
-      lightboxImg.classList.add("slide-left");
+  // Determine direction of navigation
+  if (index > currentIndex) {
+       lightboxImg.classList.add("slide-left");
     } else if (index < currentIndex) {
       lightboxImg.classList.add("slide-right");
     }
@@ -107,6 +103,11 @@ function openLightbox(index) {
       // Show arrows after full image load
       document.querySelector(".lightbox-arrows")?.classList.add("visible");
     };
+
+
+  lightbox.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+  lightboxImg.classList.add("loading");
 
 
   if (isMobile) {
