@@ -160,7 +160,7 @@ a:hover{
 }
 
 
-/* Lightbox overlay */
+/* ===== LIGHTBOX OVERLAY ===== */
 .lightbox {
   position: fixed;
   inset: 0;
@@ -175,20 +175,17 @@ a:hover{
   display: none;
 }
 
-/* Lightbox image */
+/* ===== LIGHTBOX IMAGE ===== */
 .lightbox img {
-  width: auto;
-  height: auto;
   max-width: 70vw;
   max-height: 85vh;
   object-fit: contain;
   border-radius: 8px;
-
-  /* 🔒 THIS PREVENTS RESIZE JUMPS */
   display: block;
+  transition: opacity 0.4s ease, filter 0.4s ease;
 }
 
-/* Mobile lightbox sizing */
+/* Mobile sizing */
 @media (max-width: 768px) {
   .lightbox img {
     max-width: 95vw;
@@ -196,13 +193,13 @@ a:hover{
   }
 }
 
-/* Loading state for progressive image swap */
+/* Loading state (blur only, no resize) */
 .lightbox img.loading {
-  opacity: 0.5;
-  filter: blur(6px);
+  opacity: 0.6;
+  filter: blur(4px);
 }
 
-/* Close button */
+/* ===== CLOSE BUTTON ===== */
 .lightbox-close {
   position: absolute;
   top: 20px;
@@ -218,6 +215,41 @@ a:hover{
 .lightbox-close:hover {
   opacity: 0.8;
 }
+
+/* ===== ARROW NAVIGATION ===== */
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 48px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 12px;
+  user-select: none;
+}
+
+.lightbox-nav.prev {
+  left: 24px;
+}
+
+.lightbox-nav.next {
+  right: 24px;
+}
+
+.lightbox-nav:hover {
+  opacity: 0.7;
+}
+
+/* Hide arrows on mobile */
+@media (max-width: 768px) {
+  .lightbox-nav {
+    display: none;
+  }
+}
+
+
 
 
 
