@@ -39,6 +39,9 @@
         <script>
         document.addEventListener("DOMContentLoaded", () => {
           const gallery = document.getElementById("gallery");
+          const lightbox = document.getElementById("lightbox");
+          const lightboxImg = document.getElementById("lightbox-img");
+          const closeBtn = document.querySelector(".lightbox-close");
 
           function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -52,10 +55,10 @@
             return `/.netlify/images?url=${encodeURIComponent(src)}&w=${width}`;
           }
 
-          // 1️⃣ Shuffle BEFORE loading
+          const widths = [400, 600, 800, 1000, 1200, 1600, 2000];
+
           const shuffled = shuffleArray([...images]);
 
-          // 2️⃣ Preload medium-sized images only (fast + safe)
           const preloadImages = shuffled.map(src => {
             return new Promise(resolve => {
               const img = new Image();
@@ -74,31 +77,56 @@
               const img = document.createElement("img");
 
               img.src = netlifyImage(src, 800);
-              img.srcset = `
-                ${netlifyImage(src, 400)} 400w,
-                ${netlifyImage(src, 800)} 800w,
-                ${netlifyImage(src, 1600)} 1600w
+              img.srcset = widths.map(w => `${netlifyImage(src, w)} ${w}w`).join(", ");
+              img.sizes = `
+                (max-width: 640px) 95vw,
+                (max-width: 1024px) 45vw,
+                (max-width: 1600px) 30vw,
+                25vw
               `;
-              img.sizes = "(max-width: 640px) 95vw, (max-width: 1024px) 45vw, 25vw";
 
               img.loading = "lazy";
               img.className = "w-full h-auto rounded-lg shadow-md object-cover fade-in-start";
+              img.style.cursor = "zoom-in";
+
+              // 🖱️ CLICK → OPEN LIGHTBOX
+              img.addEventListener("click", () => {
+                lightboxImg.src = netlifyImage(src, 3000);
+                lightbox.classList.remove("hidden");
+                document.body.style.overflow = "hidden";
+              });
 
               fragment.appendChild(img);
             });
 
-            // 3️⃣ Append everything at once
             gallery.appendChild(fragment);
 
-            // 4️⃣ Trigger fade-in
             requestAnimationFrame(() => {
               document.querySelectorAll(".fade-in-start").forEach(img => {
                 img.classList.add("loaded");
               });
             });
           });
+
+          // ❌ CLOSE LIGHTBOX
+          function closeLightbox() {
+            lightbox.classList.add("hidden");
+            lightboxImg.src = "";
+            document.body.style.overflow = "";
+          }
+
+          closeBtn.addEventListener("click", closeLightbox);
+
+          lightbox.addEventListener("click", e => {
+            if (e.target === lightbox) closeLightbox();
+          });
+
+          document.addEventListener("keydown", e => {
+            if (e.key === "Escape") closeLightbox();
+          });
         });
         </script>
+
 
 
 
