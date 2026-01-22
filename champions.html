@@ -89,11 +89,22 @@
               img.className = "w-full h-auto rounded-lg shadow-md object-cover fade-in-start";
               img.style.cursor = "zoom-in";
 
-              // 🖱️ CLICK → OPEN LIGHTBOX
               img.addEventListener("click", () => {
-                lightboxImg.src = netlifyImage(src, 3000);
+                // 1️⃣ Show the already-loaded image instantly
+                lightboxImg.src = img.src;
+                lightboxImg.classList.add("loading");
                 lightbox.classList.remove("hidden");
                 document.body.style.overflow = "hidden";
+
+                // 2️⃣ Preload full-res image
+                const highRes = new Image();
+                highRes.src = netlifyImage(src, 3000);
+
+                highRes.onload = () => {
+                  // 3️⃣ Swap to high-res smoothly
+                  lightboxImg.src = highRes.src;
+                  lightboxImg.classList.remove("loading");
+                };
               });
 
               fragment.appendChild(img);
