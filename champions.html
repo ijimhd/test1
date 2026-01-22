@@ -35,6 +35,10 @@
           <img id="lightbox-img" alt="">
         </div>
 
+        <button class="lightbox-nav prev">&#10094;</button>
+        <button class="lightbox-nav next">&#10095;</button>
+
+
 
         <script src="gallery-champions.js"></script>
         <script>
@@ -43,6 +47,45 @@
           const lightbox = document.getElementById("lightbox");
           const lightboxImg = document.getElementById("lightbox-img");
           const closeBtn = document.querySelector(".lightbox-close");
+
+          prevBtn.addEventListener("click", showPrev);
+          nextBtn.addEventListener("click", showNext);
+
+          // Keyboard support
+          document.addEventListener("keydown", e => {
+            if (lightbox.classList.contains("hidden")) return;
+            if (e.key === "ArrowRight") showNext();
+            if (e.key === "ArrowLeft") showPrev();
+          });
+
+          let touchStartX = 0;
+          let touchEndX = 0;
+
+          lightbox.addEventListener("touchstart", e => {
+            touchStartX = e.changedTouches[0].screenX;
+          });
+
+          lightbox.addEventListener("touchend", e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+          });
+
+          function handleSwipe() {
+            const diff = touchEndX - touchStartX;
+
+            // Minimum distance to qualify as a swipe
+            if (Math.abs(diff) < 40) return;
+
+            if (diff > 0) {
+              // Swipe right → previous
+              showPrev();
+            } else {
+              // Swipe left → next
+              showNext();
+            }
+          }
+
+
 
           function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
