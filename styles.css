@@ -160,7 +160,7 @@ a:hover{
 }
 
 
-/* ===== LIGHTBOX OVERLAY ===== */
+/* Lightbox overlay */
 .lightbox {
   position: fixed;
   inset: 0;
@@ -175,17 +175,20 @@ a:hover{
   display: none;
 }
 
-/* ===== LIGHTBOX IMAGE ===== */
+/* Lightbox image */
 .lightbox img {
+  width: auto;
+  height: auto;
   max-width: 70vw;
   max-height: 85vh;
   object-fit: contain;
   border-radius: 8px;
+
+  /* 🔒 THIS PREVENTS RESIZE JUMPS */
   display: block;
-  transition: opacity 0.4s ease, filter 0.4s ease;
 }
 
-/* Mobile sizing */
+/* Mobile lightbox sizing */
 @media (max-width: 768px) {
   .lightbox img {
     max-width: 95vw;
@@ -193,13 +196,13 @@ a:hover{
   }
 }
 
-/* Loading state (blur only, no resize) */
+/* Loading state for progressive image swap */
 .lightbox img.loading {
-  opacity: 0.6;
-  filter: blur(4px);
+  opacity: 0.5;
+  filter: blur(6px);
 }
 
-/* ===== CLOSE BUTTON ===== */
+/* Close button */
 .lightbox-close {
   position: absolute;
   top: 20px;
@@ -216,7 +219,6 @@ a:hover{
   opacity: 0.8;
 }
 
-/* ===== ARROW NAVIGATION ===== */
 .lightbox-nav {
   position: absolute;
   top: 50%;
@@ -242,13 +244,12 @@ a:hover{
   opacity: 0.7;
 }
 
-/* Hide arrows on mobile */
+/* Hide arrows on mobile (optional, recommended) */
 @media (max-width: 768px) {
   .lightbox-nav {
     display: none;
   }
 }
-
 
 
 
