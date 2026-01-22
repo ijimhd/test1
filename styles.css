@@ -185,6 +185,32 @@ a:hover{
   user-select: none;
 }
 
+.lightbox-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lightbox-arrows {
+  margin-top: 12px; /* space between image and arrows */
+  display: flex;
+  justify-content: space-between;
+  width: 60%; /* adjust width as needed */
+}
+
+.lightbox-nav {
+  font-size: 36px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px 16px;
+}
+
+.lightbox-nav:hover {
+  opacity: 0.7;
+}
+
 /* Mobile lightbox sizing */
 @media (max-width: 768px) {
   .lightbox img {
