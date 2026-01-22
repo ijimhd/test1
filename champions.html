@@ -87,6 +87,28 @@ function openLightbox(index) {
   document.body.style.overflow = "hidden";
   lightboxImg.classList.add("loading");
 
+    lightboxImg.classList.remove("loaded", "slide-left", "slide-right");
+    
+    // Determine direction of navigation
+    if (index > currentIndex) {
+      lightboxImg.classList.add("slide-left");
+    } else if (index < currentIndex) {
+      lightboxImg.classList.add("slide-right");
+    }
+    
+    lightboxImg.src = netlifyImage(src, 800); // medium first
+    
+    const highRes = new Image();
+    highRes.src = netlifyImage(src, 1600);
+    highRes.onload = () => {
+      lightboxImg.src = highRes.src;
+      lightboxImg.classList.add("loaded");
+    
+      // Show arrows after full image load
+      document.querySelector(".lightbox-arrows")?.classList.add("visible");
+    };
+
+
   if (isMobile) {
     // Mobile: use medium image
     lightboxImg.src = netlifyImage(src, 800);
